@@ -8,10 +8,10 @@ import stepDefinitions.MyHooks;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
-        features = "classpath:features",   // ✅ path to your .feature files
-        glue = {"stepDefinitions"},          // ✅ package of your step defs
-        plugin = {"pretty", "html:target/cucumber-report.html"}, // optional, for report
-        monochrome = false,tags = "@smoke")
+        features = "classpath:features",
+        glue = {"stepDefinitions"},
+        plugin = {"pretty", "html:target/cucumber-report.html"},
+        monochrome = false, tags = "@smoke", dryRun = false)
 public class TestRunner {
 
 

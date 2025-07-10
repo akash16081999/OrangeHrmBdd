@@ -2,6 +2,30 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>mojo-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>mojo-releases</id>
+            <url>https://oss.sonatype.org/content/repositories/releases</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example</groupId>
@@ -11,83 +35,60 @@
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-
-        <!-- Ensures test classes go into the same output dir -->
-        <testOutputDirectory>${project.build.outputDirectory}</testOutputDirectory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
     <dependencies>
+        <!-- Selenium -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>4.33.0</version> <!-- Or latest -->
+            <version>4.33.0</version>
         </dependency>
 
-
-        <!--        &lt;!&ndash; https://mvnrepository.com/artifact/io.qameta.allure/allure-testng&ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>io.qameta.allure</groupId>-->
-        <!--            <artifactId>allure-testng</artifactId>-->
-        <!--            <version>2.29.1</version>-->
-        <!--        </dependency>-->
-        <!-- https://mvnrepository.com/artifact/com.aventstack/extentreports -->
-        <dependency>
-            <groupId>com.aventstack</groupId>
-            <artifactId>extentreports</artifactId>
-            <version>5.1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.11.0</version> <!-- or latest -->
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/io.cucumber/cucumber-java -->
+        <!-- Cucumber -->
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-java</artifactId>
             <version>7.23.0</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/io.cucumber/cucumber-core -->
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-core</artifactId>
             <version>7.23.0</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/io.cucumber/cucumber-junit -->
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-junit</artifactId>
             <version>7.23.0</version>
             <scope>test</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/junit/junit -->
+
+        <!-- JUnit -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.2</version>
-            <scope>test</scope>
+        </dependency>
+
+        <!-- Extent Reports -->
+        <dependency>
+            <groupId>com.aventstack</groupId>
+            <artifactId>extentreports</artifactId>
+            <version>5.1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.11.0</version>
         </dependency>
     </dependencies>
 
     <build>
-        <!-- Copy testng.xml from src/test/resources -->
-        <!--        <resources>-->
-        <!--            <resource>-->
-        <!--                <directory>src/test/resources</directory>-->
-        <!--                <includes>-->
-        <!--                    <include>testng.xml</include>-->
-        <!--                </includes>-->
-        <!--            </resource>-->
-        <!--        </resources>-->
-
         <plugins>
-            <!-- Ensure test classes are copied into main output -->
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
-            </plugin>
 
-            <!-- Copy test classes into main output -->
+            <!-- Add generated test source -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -95,34 +96,20 @@
                 <executions>
                     <execution>
                         <id>add-test-source</id>
-                        <phase>generate-sources</phase>
+                        <phase>generate-test-sources</phase>
                         <goals>
                             <goal>add-test-source</goal>
                         </goals>
                         <configuration>
                             <sources>
-                                <source>src/test/java</source>
+                                <source>target/generated-test-sources</source>
                             </sources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>add-test-resources</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>add-test-resource</goal>
-                        </goals>
-                        <configuration>
-                            <resources>
-                                <resource>
-                                    <directory>src/test/resources</directory>
-                                </resource>
-                            </resources>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
 
-            <!--  Create runnable JAR with dependencies-->
+            <!-- Create executable JAR -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.6.0</version>
@@ -132,7 +119,7 @@
                     </descriptors>
                     <archive>
                         <manifest>
-                            <mainClass>runner.TestRunner</mainClass>
+                            <mainClass>runner.CLIRunner</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -147,7 +134,7 @@
                 </executions>
             </plugin>
 
-            <!-- copy the created jar to root folder using the antrun plugin -->
+            <!-- Copy the jar to project root -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -171,18 +158,16 @@
                 </executions>
             </plugin>
 
+            <!-- Parallel execution config -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M9</version> <!-- or latest -->
+                <version>3.0.0-M9</version>
                 <configuration>
                     <skipTests>${skipTests}</skipTests>
                 </configuration>
-
             </plugin>
 
         </plugins>
     </build>
-
-
 </project>
