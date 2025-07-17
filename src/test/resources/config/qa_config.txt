@@ -11,4 +11,16 @@ cli cmd : java -Dbrowser=chrome -Durl=https://opensource-demo.orangehrmlive.com/
 mvn test cmd : mvn test "-Dbrowser=chrome" "-Durl=https://opensource-demo.orangehrmlive.com/web/index.php/auth/login" "-Demail=Admin" "-Dpassword=admin123" "-Dcucumber.filter.tags=smoke"
 
 mvn package cmd : mvn clean package -DskipTests=true
-cli jar execution cmd :java -DskipTests=false "-Dbrowser=chrome" "-Durl=https://opensource-demo.orangehrmlive.com/web/index.php/auth/login" "-Demail=Admin" "-Dpassword=admin123" "-Dcucumber.filter.tags=reg" -jar orangeHrmCucumber-1.0-SNAPSHOT-jar-with-dependencies-and-tests.jar
+cli jar execution cmd :java -DskipTests=false "-Dbrowser=chrome" "-Durl=https://opensource-demo.orangehrmlive.com/web/index.php/auth/login" "-Demail=Admin" "-Dpassword=admin123" "-Dcucumber.filter.tags=@reg" -jar orangeHrmCucumber-1.0-SNAPSHOT-jar-with-dependencies-and-tests.jar
+
+
+
+<-------Note below are for the parallel execution using testng or junit based on proile ----->
+
+For junit Based Parallel exdcution using (-Pjunit) in cli
+for testng based parallel execution use (-Ptestng) in cli.
+
+mvn test -Pjunit "-Dcucumber.filter.tags=@smoke" -Dbrowser=chrome -Durl=https://opensource-demo.orangehrmlive.com/web/index.php/auth/login -Demail=Admin -Dpassword=admin123
+mvn test -Ptestng "-Dcucumber.filter.tags=@smoke" -Dbrowser=chrome -Durl=https://opensource-demo.orangehrmlive.com/web/index.php/auth/login -Demail=Admin -Dpassword=admin123
+
+
